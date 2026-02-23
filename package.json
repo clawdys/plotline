@@ -45,7 +45,12 @@
       "server.js",
       "package.json",
       ".env.example",
-      "start.sh",
+      "node_modules/**/*"
+    ],
+    "asarUnpack": [
+      "server.js",
+      "lib/**/*",
+      "public/**/*",
       "node_modules/**/*"
     ],
     "extraResources": [

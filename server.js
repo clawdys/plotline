@@ -11,7 +11,9 @@ import { exportFCPXML, exportResolveXML, exportAssemblyFCPXML, exportAssemblyRes
 import { alignScriptToTranscript } from './lib/aligner.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = path.join(__dirname, 'data');
+// When launched from Electron, PLOTLINE_DATA_DIR points to ~/Library/Application Support/plotline/data
+// When running standalone, data lives next to server.js
+const DATA_DIR = process.env.PLOTLINE_DATA_DIR || path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 const PROJECTS_DIR = path.join(DATA_DIR, 'projects');
 const EXPORTS_DIR = path.join(DATA_DIR, 'exports');

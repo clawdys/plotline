@@ -6,7 +6,7 @@ DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
 
 # Check dependencies
-if ! command -v whisper-cpp &> /dev/null; then
+if ! command -v whisper-cli &> /dev/null; then
   echo "❌ whisper-cpp not found. Install: brew install whisper-cpp"
   exit 1
 fi
