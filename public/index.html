@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLOTLINE</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ============ TOAST CONTAINER ============ -->
+  <div id="toast-container"></div>
+
+  <!-- ============ PROJECT LIST VIEW ============ -->
+  <div id="view-projects" class="view active">
+    <header class="main-header">
+      <h1 class="logo">PLOTLINE</h1>
+      <p class="tagline">Audio → Transcript → Screenplay → Timeline</p>
+    </header>
+
+    <main class="projects-main">
+      <!-- Upload Zone -->
+      <div id="upload-zone" class="upload-zone" tabindex="0" role="button" aria-label="Upload audio file">
+        <div class="upload-zone-inner">
+          <div class="upload-icon">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <path d="M24 32V12M24 12L16 20M24 12L32 20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 32V38C8 39.1 8.9 40 10 40H38C39.1 40 40 39.1 40 38V32" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="upload-text">Drop audio file or click to upload</p>
+          <p class="upload-formats">WAV · MP3 · M4A · MP4 · MOV · AAC · FLAC</p>
+        </div>
+        <input type="file" id="file-input" accept=".wav,.mp3,.m4a,.mp4,.mov,.aac,.flac,audio/*,video/mp4,video/quicktime" hidden>
+      </div>
+
+      <!-- Project Grid -->
+      <section class="projects-section">
+        <h2 class="section-title">Projects</h2>
+        <div id="projects-grid" class="projects-grid">
+          <!-- Populated by JS -->
+        </div>
+        <div id="projects-empty" class="projects-empty" hidden>
+          <p>No projects yet. Upload an audio file to get started.</p>
+        </div>
+        <div id="projects-loading" class="projects-loading" hidden>
+          <div class="spinner"></div>
+          <p>Loading projects…</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ============ PROJECT EDITOR VIEW ============ -->
+  <div id="view-editor" class="view">
+    <!-- Top Bar -->
+    <div class="editor-topbar">
+      <button id="btn-back" class="btn-icon" title="Back to projects">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <input type="text" id="project-name" class="project-name-input" placeholder="Untitled Project" spellcheck="false">
+      <div class="topbar-right">
+        <span id="status-badge" class="status-badge">uploaded</span>
+        <button id="btn-delete-project" class="btn-icon btn-danger" title="Delete project">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M3 5H15M6 5V3.5C6 3.22 6.22 3 6.5 3H11.5C11.78 3 12 3.22 12 3.5V5M7 8V13M11 8V13M4.5 5L5.25 14.5C5.28 14.78 5.52 15 5.8 15H12.2C12.48 15 12.72 14.78 12.75 14.5L13.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Editor Workspace -->
+    <div class="editor-workspace">
+      <!-- Left Panel: Audio Player -->
+      <div class="panel panel-audio">
+        <div class="panel-header">
+          <span class="panel-title">Audio</span>
+        </div>
+        <div class="audio-player">
+          <canvas id="waveform-canvas" class="waveform-canvas"></canvas>
+          <div class="audio-progress-bar">
+            <input type="range" id="audio-seek" class="seek-slider" min="0" max="100" value="0" step="0.1">
+          </div>
+          <div class="audio-time">
+            <span id="audio-current">0:00</span>
+            <span id="audio-duration">0:00</span>
+          </div>
+          <div class="audio-controls">
+            <button id="btn-play" class="btn-play" title="Play / Pause (Space)">
+              <svg id="icon-play" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5V19L19 12L8 5Z"/>
+              </svg>
+              <svg id="icon-pause" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" hidden>
+                <path d="M6 4H10V20H6V4ZM14 4H18V20H14V4Z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="speed-controls">
+            <span class="speed-label">Speed</span>
+            <button class="btn-speed" data-speed="0.5">0.5×</button>
+            <button class="btn-speed active" data-speed="1">1×</button>
+            <button class="btn-speed" data-speed="1.5">1.5×</button>
+            <button class="btn-speed" data-speed="2">2×</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center Panel: Transcript Editor -->
+      <div class="panel panel-transcript">
+        <div class="panel-header">
+          <span class="panel-title">Transcript</span>
+          <span id="transcript-count" class="panel-meta"></span>
+        </div>
+        <div id="transcript-container" class="transcript-container">
+          <div id="transcript-empty" class="transcript-empty">
+            <p>No transcript yet.</p>
+            <p class="subtle">Click "Transcribe" below to begin.</p>
+          </div>
+          <div id="transcript-segments" class="transcript-segments">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Script View -->
+      <div id="panel-script" class="panel panel-script">
+        <div class="panel-header">
+          <span class="panel-title">Script</span>
+        </div>
+        <div id="script-container" class="script-container">
+          <div id="script-empty" class="script-empty">
+            <p>No script yet.</p>
+            <p class="subtle">Use "AI Organize" after transcription.</p>
+          </div>
+          <div id="script-elements" class="script-elements">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ PAPER EDIT TAB ============ -->
+    <div id="panel-paper-edit" class="panel panel-paper-edit">
+      <div class="panel-header">
+        <span class="panel-title">Paper Edit</span>
+        <button id="btn-close-paper-edit" class="btn-icon btn-small-close" title="Close Paper Edit">×</button>
+      </div>
+      <div class="paper-edit-content">
+        <!-- Script Input -->
+        <div class="paper-edit-input">
+          <div class="paper-edit-toolbar">
+            <span class="paper-edit-label">Your Script</span>
+            <div class="paper-edit-actions-top">
+              <label class="btn-small btn-ghost btn-import-script" title="Import .txt / .md / .fountain">
+                Import
+                <input type="file" id="script-file-input" accept=".txt,.md,.fountain,text/plain" hidden>
+              </label>
+              <button id="btn-clear-script" class="btn-small btn-ghost" title="Clear script">Clear</button>
+            </div>
+          </div>
+          <textarea id="edit-script-textarea" class="edit-script-textarea" placeholder="Paste your script here, or import a .txt / .md / .fountain file...&#10;&#10;Each line will be matched against the transcript."></textarea>
+        </div>
+
+        <!-- Alignment Results -->
+        <div id="alignment-results" class="alignment-results" hidden>
+          <div class="alignment-stats" id="alignment-stats"></div>
+          <div class="alignment-entries" id="alignment-entries">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Action Bar -->
+    <div class="action-bar">
+      <div class="action-bar-left">
+        <!-- Transcribe Group -->
+        <div id="action-transcribe" class="action-group">
+          <select id="model-select" class="select-model">
+            <option value="tiny">tiny</option>
+            <option value="base" selected>base</option>
+            <option value="small">small</option>
+            <option value="medium">medium</option>
+          </select>
+          <button id="btn-transcribe" class="btn-action btn-primary">
+            <span class="btn-label">Transcribe</span>
+            <div class="btn-spinner" hidden></div>
+          </button>
+        </div>
+
+        <!-- Organize Group -->
+        <div id="action-organize" class="action-group" hidden>
+          <button id="btn-organize-toggle" class="btn-action btn-secondary" title="AI Organize (⌘O)">
+            AI Organize
+          </button>
+          <div id="organize-panel" class="organize-panel" hidden>
+            <textarea id="organize-instructions" class="organize-textarea" placeholder="Optional instructions (e.g., 'Format as interview between two people')"></textarea>
+            <div class="organize-panel-actions">
+              <button id="btn-organize-cancel" class="btn-small btn-ghost">Cancel</button>
+              <button id="btn-organize-submit" class="btn-small btn-primary">Organize</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar-right">
+        <!-- Paper Edit Group -->
+        <div id="action-paper-edit" class="action-group" hidden>
+          <button id="btn-paper-edit-toggle" class="btn-action btn-secondary" title="Paper Edit">
+            ✂ Paper Edit
+          </button>
+          <button id="btn-align-script" class="btn-action btn-secondary" title="Align script to transcript" hidden>
+            Align Script
+          </button>
+          <button id="btn-generate-assembly" class="btn-action btn-secondary" title="Generate assembly cut" hidden>
+            Assembly Cut ▾
+          </button>
+          <div id="assembly-menu" class="dropdown-menu" hidden>
+            <button class="dropdown-item" data-assembly="fcpxml">FCPXML (Final Cut Pro)</button>
+            <button class="dropdown-item" data-assembly="resolve">DaVinci Resolve XML</button>
+          </div>
+        </div>
+
+        <!-- Export Group -->
+        <div id="action-export" class="action-group" hidden>
+          <div class="export-dropdown">
+            <button id="btn-export" class="btn-action btn-secondary" title="Export (⌘E)">
+              Export ▾
+            </button>
+            <div id="export-menu" class="dropdown-menu" hidden>
+              <button class="dropdown-item" data-export="fcpxml">FCPXML (Final Cut Pro)</button>
+              <button class="dropdown-item" data-export="resolve">DaVinci Resolve XML</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div id="action-status" class="action-status" hidden>
+          <div class="status-spinner"></div>
+          <span id="status-text" class="status-text">Processing…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="audio-el" preload="auto"></audio>
+  <script src="app.js"></script>
+</body>
+</html>

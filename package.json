@@ -1,0 +1,58 @@
+{
+  "name": "plotline",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "On-device audio transcription → script editing → FCPXML export",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "server": "node server.js",
+    "dev": "node --watch server.js",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac"
+  },
+  "keywords": ["transcription", "filmmaking", "fcpxml", "script", "whisper", "electron"],
+  "author": "Rowdy Stephens",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "multer": "^2.0.2",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "electron": "^34.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.plotline.app",
+    "productName": "Plotline",
+    "mac": {
+      "category": "public.app-category.video",
+      "target": [
+        { "target": "dmg", "arch": ["arm64"] },
+        { "target": "zip", "arch": ["arm64"] }
+      ],
+      "darkModeSupport": true
+    },
+    "files": [
+      "electron/**/*",
+      "lib/**/*",
+      "public/**/*",
+      "server.js",
+      "package.json",
+      ".env.example",
+      "start.sh",
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      { "from": "data/models", "to": "models", "filter": ["**/*"] }
+    ],
+    "directories": {
+      "output": "release"
+    }
+  }
+}

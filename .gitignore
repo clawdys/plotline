@@ -1,0 +1,13 @@
+node_modules/
+data/uploads/*
+!data/uploads/.gitkeep
+data/projects/*
+!data/projects/.gitkeep
+data/exports/*
+!data/exports/.gitkeep
+data/models/*.bin
+release/
+dist/
+.env
+.DS_Store
+*.log
