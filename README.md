@@ -27,37 +27,53 @@ Plotline transcribes audio locally using [whisper.cpp](https://github.com/ggerga
 - **Homebrew** — [brew.sh](https://brew.sh)
 - **whisper-cpp** — `brew install whisper-cpp`
 - **ffmpeg** — `brew install ffmpeg`
-- **Node.js 22+** — `brew install node`
 
 ```bash
-# Install all prerequisites at once
-brew install whisper-cpp ffmpeg node
+# Install prerequisites (one-time)
+brew install whisper-cpp ffmpeg
 ```
+
+> **Note:** Node.js is only needed if running from source (Option B). The .dmg download bundles everything else.
 
 The Whisper model (~465 MB) downloads automatically on first transcription.
 
 ## Quick Start
 
-### Option A: Run the Electron App
+### Option A: Download the App (Recommended)
+
+No Node.js or npm required — just download, install, and run.
+
+1. Go to [**Releases**](https://github.com/clawdys/plotline/releases/latest)
+2. Download `Plotline-1.0.0-arm64.dmg`
+3. Open the `.dmg` and drag **Plotline** to your Applications folder
+4. Double-click to launch
+
+The app checks for whisper-cpp and ffmpeg on startup and tells you if they're missing.
+
+```bash
+# Install the two required system dependencies (one-time)
+brew install whisper-cpp ffmpeg
+```
+
+Don't have Homebrew? Install it first:
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### Option B: Run from Source (Developer)
+
+Requires Node.js 22+ (`brew install node`).
 
 ```bash
 git clone https://github.com/clawdys/plotline.git
 cd plotline
 npm install
-npm start
+npm start          # Launch Electron app
+# or
+npm run server     # Web server only → http://localhost:3847
 ```
 
-### Option B: Run as a Web Server (no Electron)
-
-```bash
-git clone https://github.com/clawdys/plotline.git
-cd plotline
-npm install
-npm run server
-# Open http://localhost:3847
-```
-
-## Building from Source
+### Building from Source
 
 ```bash
 npm run dist:mac
